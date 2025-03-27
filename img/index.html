@@ -1,0 +1,705 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Build with AI - Flutter Web Codelab: Multi-modality</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements-tmp/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="buildwithai-flutter2"
+                  title="Build with AI - Flutter Web Codelab: Multi-modality"
+                  environment="web"
+                  feedback-link="https://romanjustcodes.web.app">
+    
+      <google-codelab-step label="Overview" duration="0">
+        <h2 is-upgraded>Welcome to the exciting world of Gemini and Flutter Web!</h2>
+<h2 is-upgraded>NOTE: THIS IS NOT A BEGINNER CODELAB</h2>
+<p>(If you&#39;re looking for more beginner content, please visit some of my other codelabs <a href="https://romanjustcodes.web.app/#/workshops" target="_blank">here</a>). If you&#39;re up for the challenge, then proceed.</p>
+<p>This is a codelab series focused on Flutter and Gemini, in which you&#39;ll learn the following:</p>
+<ul>
+<li>Building Layouts in Flutter</li>
+<li>State Management using Riverpod</li>
+<li>Gemini Integration: how to supercharge your Flutter Web Apps using the power of AI</li>
+<li>Tapping into the multi-modality capabilities of Gemini</li>
+</ul>
+<p>The bottom image is a screenshot of what we&#39;ll be building during this session, so follow along:</p>
+<p class="image-container"><img alt="App" src="img/e713ddc0be2da090.png"></p>
+<h2 is-upgraded>Prerequisites:</h2>
+<ul>
+<li>Install the <a href="https://docs.flutter.dev/get-started/install?_gl=1*1brl6tq*_up*MQ..&gclid=Cj0KCQjwlN6wBhCcARIsAKZvD5glFQAhQexfPyPp_iD_d8TDJXVEkrWi764bce2rvf0kCwIab8ycg2QaApVeEALw_wcB&gclsrc=aw.ds" target="_blank">Flutter SDK</a></li>
+<li>Your preferred IDE (preferably <a href="https://code.visualstudio.com" target="_blank">Visual Studio Code</a>)</li>
+<li>Optionally: use <a href="https://idx.dev/" target="_blank">Project IDX</a></li>
+<li>Install the <a href="https://pub.dev/packages/google_generative_ai" target="_blank">Google AI Dart SDK</a> (plus other dependencies)</li>
+<li>Get a Gemini API Key using <a href="https://aistudio.google.com/" target="_blank">Google AI Studio</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Install Flutter" duration="0">
+        <p><a href="https://flutter.dev/" target="_blank"><strong>Flutter</strong></a> is an open-source UI Toolkit supported by Google for building beautiful, natively-compiled user interfaces in a multi-platform fashion, using <a href="https://dart.dev/" target="_blank"><strong>Dart</strong></a>, another open-source programming language supported by Google, as its core language.</p>
+<p><a href="https://flutter.dev/multi-platform/web" target="_blank"><strong>Flutter for Web</strong></a> provides the lowest barrier to entry when it comes to becoming a profilic Flutter developer. Most of the concepts learned in Flutter can be applied in a multi-platform scenario, and web is not an exception, so join us in building compelling web apps by going through the codelabs in this series.</p>
+<p>Let&#39;s perform the following steps:</p>
+<ul>
+<li>Download the <a href="https://docs.flutter.dev/get-started/install?_gl=1*1brl6tq*_up*MQ..&gclid=Cj0KCQjwlN6wBhCcARIsAKZvD5glFQAhQexfPyPp_iD_d8TDJXVEkrWi764bce2rvf0kCwIab8ycg2QaApVeEALw_wcB&gclsrc=aw.ds" target="_blank">Flutter SDK</a> according to your corresponding machine architecture and set it up to develop for the web. Proceed with the installation.</li>
+</ul>
+<p><strong>NOTE</strong>: make sure you can run the command <code>flutter doctor</code> at a minimum before proceeding to the next step, as this is proof that the Flutter SDK is set up correctly in your environment.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Create the Flutter Project" duration="0">
+        <p>Using your preferred IDE (in our case, Visual Studio Code), we&#39;ll open up a command line and run the following command in order to create the base Flutter project:</p>
+<pre><code language="language-dart" class="language-dart">flutter create gemini_pictionary_app
+
+</code></pre>
+<p>This will create a Flutter project called <strong>gemini_pictionary_app</strong> with some scaffolding and boilerplate code in place. We&#39;ll get rid of most of it later down this session.</p>
+<p>After project creation, make sure to <code>cd</code> into the project or re-open Visual Studio Code into the folder created for the project (<strong>gemini_pictionary_app</strong>) before you continue.</p>
+<ul>
+<li>We&#39;ll use Chrome as our device to test so once the Flutter SDK is installed, take it for a first spin by running the following command:</li>
+</ul>
+<pre><code language="language-dart" class="language-dart">flutter run -d chrome
+
+</code></pre>
+<p><strong>NOTE</strong>: there is no hot-reload unfortunately while developing for the web, only hot restart.</p>
+<p>After loading it for the first time, make sure you can see the sample Flutter Web project, as such:</p>
+<p class="image-container"><img alt="App" src="img/cb844692c8b0fb59.png"></p>
+<h2 is-upgraded>Install Dependencies</h2>
+<p>We&#39;ll be installing the following dependencies:</p>
+<ul>
+<li>For state management, install <a href="https://pub.dev/packages/flutter_riverpod" target="_blank">flutter_riverpod</a></li>
+<li>For the Gemini API integration, we&#39;ll use the <a href="https://pub.dev/packages/google_generative_ai" target="_blank">google_generative_ai</a> package from pub.dev</li>
+<li>For the painting package, we&#39;ll use <a href="https://pub.dev/packages/finger_painter" target="_blank">finger_painter</a>, a power yet simple painting package that lets you finger paint with different brushes and blend modes.</li>
+<li>A cool animations library called <a href="https://pub.dev/packages/flutter_animate" target="_blank">flutter_animate</a></li>
+</ul>
+<p>You can install them by running the following command in the command line:</p>
+<pre><code language="language-dart" class="language-dart">flutter pub add flutter_riverpod google_generative_ai finger_painter flutter_animate
+
+</code></pre>
+<p>With the dependencies in place and the project up and running, let&#39;s proceed!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Optional: Use Project IDX" duration="0">
+        <p>If you don&#39;t want to set up your machine with Flutter at the moment, you can use Project IDX (https://idx.dev/), an entirely web-based workspace for full-stack application development, complete with the latest generative AI from Gemini, and full-fidelity app previews, powered by cloud emulators.</p>
+<p class="image-container"><img alt="App" src="img/30749807703d470d.png"></p>
+<p>Make sure that after setting up your project on IDX, install the required dependencies for this project, by opening a new Terminal (CTRL + `) or in Project IDX, go to the hamburger menu, then <strong>Terminal &gt; New Terminal</strong> and run the following command:</p>
+<pre><code language="language-dart" class="language-dart">flutter pub add flutter_riverpod google_generative_ai finger_painter flutter_animate
+
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Get a Gemini API key" duration="0">
+        <p><a href="https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwjm0qCA07uFAxWoakcBHTb9B_MYABABGgJxdQ&ase=2&gclid=Cj0KCQjwlN6wBhCcARIsAKZvD5hhoX4NBHsU5ajiwLmUJPqSgkjHLFkYdwpLZz5L-4iLKWfrtgmNfJgaAuI6EALw_wcB&ohost=www.google.com&cid=CAESVuD2ygxQWbuyb9o3P5JbSCgJLYFXknTYAZqfnIiizTEcreRZPyrGdiOWIPnhiBe9mg8sBm_XQc75xX3XIN_D201vzmN_PQsNO8kchLtqAHMU0Unp7uE7&sig=AOD64_1dPKqP4bfwQrF-Dc-vo2_G2tN9jg&q&nis=4&adurl&ved=2ahUKEwiDjJqA07uFAxXwg4kEHdU9CD4Q0Qx6BAgHEAE" target="_blank">Gemini</a> is a family of multimodal large language models developed by Google DeepMind, serving as the successor to LaMDA and PaLM 2. Comprising Gemini Ultra, Gemini Pro, and Gemini Nano, it was announced on December 6, 2023, positioned as a competitor to OpenAI&#39;s GPT-4.</p>
+<p>In order to talk to Gemini, we&#39;ll use the Gemini API, and for that we&#39;ll require an API Key, which we&#39;ll supply to Flutter through the Google AI Dark SDK.</p>
+<p>Go to <a href="https://aistudio.google.com" target="_blank">Google AI Studio</a>, and sign in with a GMail account.</p>
+<p class="image-container"><img alt="App" src="img/17ead8ebc43c8cc1.png"></p>
+<p>Since we&#39;ll be developing in our own environment, make sure to select the <strong>Develop in your own environment</strong> option - click on <strong>Get API key</strong>:</p>
+<p class="image-container"><img alt="App" src="img/845df667196445b.png"></p>
+<p>Consent to all applicable options - click <strong>Continue</strong>:</p>
+<p class="image-container"><img alt="App" src="img/e1efc78044d075df.png"></p>
+<p>API Keys are associated with a Google Cloud project. Click on <strong>Create API Key</strong>, then select whether to associate it with an existing project, or create a new project.</p>
+<p class="image-container"><img alt="App" src="img/f2f8f3df911019d5.png"></p>
+<p class="image-container"><img alt="App" src="img/98337aee194abaf8.png"></p>
+<p>Once the key is generated, save it locally somewhere - we&#39;ll be needing this later and offer ways to secure it.</p>
+<p class="image-container"><img alt="App" src="img/f922ac38eacf6d25.png"></p>
+<p>With our API Key in hand, let&#39;s proceed to build the app, shall we?</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Building the App" duration="0">
+        <p>The bottom is a brief schematics of what we&#39;ll be tackling from the widget composition perspective:</p>
+<p class="image-container"><img alt="App" src="img/6931c5792fa0f61d.png"></p>
+<p>As you know, everything in Flutter is a widget, and Flutter gives you full control of what can be considered a widget and how to paint it on the screen - you own every pixel! This is where Flutter shines.</p>
+<h2 is-upgraded>Add the root app widget</h2>
+<p>Let&#39;s start by setting up the initial plumbing of the application. We&#39;ll start by creating the root app widget.</p>
+<p>Navigate to your project, and start by removing everything from your <strong>main.dart</strong> file.</p>
+<h2 is-upgraded>For simplicity and for the sake of this codelab, we&#39;ll concentrate on only the <strong>main.dart</strong> file so all widgets will be added here, but as a best practice each widget should live within its own file - food for thought!</h2>
+<p><strong>NOTE</strong>: as we assemble the app, you may get temporary errors - do not fret! This is part of the building progress and things should fall into place as we make progress. Keep pushing through!</p>
+<p>Proceed to add all dependencies required by this project, first making sure you&#39;ve add the packages through the terminal, as such:</p>
+<pre><code language="language-dart" class="language-dart">flutter pub add flutter_riverpod google_generative_ai finger_painter flutter_animate
+
+</code></pre>
+<p>then add the imports along with the root app widget, named <strong>GeminiTempApp</strong>:</p>
+<pre><code language="language-dart" class="language-dart">// dependencies
+import &#39;dart:convert&#39;;
+import &#39;package:finger_painter/finger_painter.dart&#39;;
+import &#39;package:flutter/material.dart&#39;;
+import &#39;package:flutter/services.dart&#39;;
+import &#39;package:flutter_animate/flutter_animate.dart&#39;;
+import &#39;package:flutter_riverpod/flutter_riverpod.dart&#39;;
+import &#39;package:google_generative_ai/google_generative_ai.dart&#39;;
+import &#39;dart:ui&#39; as ui;
+
+// root widget
+void main() {
+  runApp(const ProviderScope(child: GeminiPictionaryApp()));
+}
+
+</code></pre>
+<p>Notice how the <strong>GeminiPictionaryApp</strong> root widget is wrapped inside a <strong>ProviderScope</strong> - this is provided by Riverpod and it is what will facilitate creating a scope around our app so we can implement a state management solution using Riverpod.</p>
+<h2 is-upgraded>Add the main GeminiPictionaryApp widget</h2>
+<p>Proceed down the line and create the scaffolding for the <strong>GeminiPictionaryApp</strong> root widget, which should return as a child a <strong>MaterialApp</strong> widget (which wraps all Material styling) and the core main widget that encapsulates all functionality, which will be called <strong>GeminiPictionaryHome</strong>, as such:</p>
+<pre><code language="language-dart" class="language-dart">// rest of the code omitted for brevity
+
+class GeminiPictionaryApp extends StatelessWidget {
+  const GeminiPictionaryApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: GeminiPictionaryHome(),
+    );
+  }
+}
+
+
+</code></pre>
+<p>The <strong>GeminiPictionaryHome</strong> will encapsulate the main functionality for this app, which will be some sort of &#34;pictionary-style&#34; web app, where users will draw with their mouse or fingers any image, then send it to Gemini as part of its multi-modality capabilities to guess what the user drew.</p>
+<p>This app will contain the following:</p>
+<ul>
+<li>A root <strong>Scaffold</strong> widget that will wrap all child widgets</li>
+<li>As a direct child of the <strong>Scaffold</strong>, a <strong>Center</strong> widget encapsulating a <strong>Column</strong> wdget, since we want to lay down our widgets in a vertical fashion.</li>
+<li>This widget will be a simple <strong>StatelessWidget</strong>, however it will encapsulate three widgets that will communicate with one another in a decoupled fashion: <ul>
+<li>a painting surface where people will draw (*<strong>PaintingSurface</strong>)</li>
+<li>a set of controls to trigger the validation and clearing of the painting canvas (<strong><em>PaintingValidationControls</em></strong>)</li>
+<li>a widget that shows the result, plus a thumbnail of the drawn image (<strong><em>PaintingValidator</em></strong>)</li>
+</ul>
+</li>
+</ul>
+<p>Add the following code below the existing one:</p>
+<pre><code language="language-dart" class="language-dart">// rest of the code omitted
+
+class GeminiPictionaryHome extends StatelessWidget {
+  const GeminiPictionaryHome({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    return Scaffold(
+      body: const Center(
+        child: Column(
+          children: [
+
+            // painting surface goes here
+
+            // painting validation controls goes here
+
+            // painting validator goes here
+          ] 
+        ) 
+      )
+    );
+  }
+}
+
+</code></pre>
+<h2 is-upgraded>FROM THIS POINT ON, WE&#39;LL FOCUS ON THE CHILD WIDGETS INSIDE THE COLUMN</h2>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Adding an AppBar" duration="0">
+        <p>Let&#39;s start from the top, and add a more distinctive <strong>AppBar</strong> widget to our <strong>GeminiPictionaryHome</strong> widget. Set the <strong>appBar</strong> property to our main <strong>Scaffold</strong> and add an <strong>AppBar</strong> widget:</p>
+<pre><code language="language-dart" class="language-dart">// inside the GeminiPictionaryHome&#39;s Scaffold
+// set the **appBar** property to this:
+
+appBar: AppBar(
+  backgroundColor: Colors.white,
+  elevation: 0,
+  centerTitle: true,
+  title: const Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(Icons.collections, color: Colors.purple),
+      SizedBox(width: 16),
+      Text(&#39;Pictionary!&#39;, style: TextStyle(color: Colors.purple))
+    ],
+  ),
+),
+
+</code></pre>
+<p>Confirm that you can see the app bar as below, then proceed:</p>
+<p class="image-container"><img alt="App" src="img/2b397036af49fe36.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Add the PaintingSurface widget" duration="0">
+        <p class="image-container"><img alt="App" src="img/d09533cb4989236e.png"></p>
+<p>This is where most of the fun happens; the painting surface is provided by our imported package <strong>finger_painter</strong>, which will allow us to paint either with our finger or mouse and draw on a white surface, from which we&#39;ll generate an image we can send to Gemini as part of its multi-modality capabilities.</p>
+<p>We&#39;ll need to import one external image to fill our canvas with a white background since the <strong>finger_painter</strong> lacks this capability.</p>
+<p>Download <a href="https://raw.githubusercontent.com/romanejaquez/recyclingvin-assets/main/badges/bgimg.png" target="_blank">this image</a> to our local environment first. This image is nothing but a white square (if you have your own, even better), but make sure you call it <strong>bgimg.png</strong> or something you can add easily in the code.</p>
+<p>Add this image to your project at the root level inside a folder called <strong>assets</strong>, as such:</p>
+<p class="image-container"><img alt="App" src="img/52f51ef8902352cf.png"></p>
+<p>Update your <strong><em>pubspec.yaml</em></strong> to add the ability to access local assets within our application, as such:</p>
+<p class="image-container"><img alt="App" src="img/bea2bb7a88be0342.png"></p>
+<p>Let&#39;s start by adding a provider that encapsulates a <strong>PainterController</strong>, which provides the underlying capabilities to our <strong>finger_painter</strong> painting surface, as such:</p>
+<pre><code language="language-dart" class="language-dart">final painterControllerProvider = Provider&lt;PainterController&gt;((ref) {
+  return PainterController()
+    ..setPenType(PenType.paintbrush)
+    ..setStrokeColor(Colors.black)
+    ..setMinStrokeWidth(3)
+    ..setMaxStrokeWidth(10)
+    ..setBlurSigma(0.0)
+    ..setBlendMode(ui.BlendMode.srcOver);
+});
+
+</code></pre>
+<p>This <strong>painterControllerProvider</strong> provides a <strong>PainterController</strong> with the following options:</p>
+<ul>
+<li>a pen type of <strong>paintbrush</strong></li>
+<li>a black stroke</li>
+<li>a min and max stroke of 3 and 10 respectively</li>
+<li>blur sigma of 0</li>
+<li>blend mode of <strong>srcOver</strong></li>
+</ul>
+<p>With that in place, proceed now and add the scaffold / placeholder widget name inside our <strong>GeminiPictionaryHome</strong> widget, as the first child of its <strong>Column</strong> widget (remove the comment saying ```painting surface goes here``)` and add <strong>PaintingSurface</strong>, as such:</p>
+<pre><code language="language-dart" class="language-dart">// inside the GeminiPictionaryHome&#39;s Column children...
+PaintingSurface();
+
+</code></pre>
+<p>Go ahead now and create a <strong>ConsumerStatefulWidget</strong> widget that fleshes out the <strong>PaintingSurface</strong> widget. We&#39;re making it as a <strong>ConsumerStatefulWidget</strong> since it will be a <strong>StatefulWidget</strong> with consuming capabilities so as to retrieve state management dependencies via its provided <strong>Ref</strong> reference:</p>
+<pre><code language="language-dart" class="language-dart">class PaintingSurface extends ConsumerStatefulWidget {
+  const PaintingSurface({super.key});
+
+  @override
+  ConsumerState&lt;PaintingSurface&gt; createState() =&gt; _PaintingSurfaceState();
+}
+
+class _PaintingSurfaceState extends ConsumerState&lt;PaintingSurface&gt; {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+</code></pre>
+<p>From inside the <strong>PaintingSurface</strong> widget, we&#39;d like to get a reference to the painter controller to perform some initialization.</p>
+<p>Inside the <strong>_PaintingSurfaceState</strong>, at the top of the state class, add a reference to the <strong>PainterController</strong>, as such:</p>
+<pre><code language="language-dart" class="language-dart">// top of the _PaintingSurfaceState class:
+
+late PainterController painterController;
+
+</code></pre>
+<p>As far as the initialization process, inside the <strong>initState</strong> method, add a new method stub called <strong>initializePainterController</strong>.</p>
+<pre><code language="language-dart" class="language-dart">// inside the initState()
+// add this line under the super.initState() call
+
+initializePainterController();
+
+</code></pre>
+<p>Create the missing method with the following characteristics:</p>
+<ul>
+<li>decorate it with the <strong>async</strong> keyword</li>
+<li>fetch a reference to the <strong>PainterController</strong> instance provided by the corresponding provider called <strong>painterControllerProvider</strong>; assign it to our late reference</li>
+<li>read the local background image out of the assets (the one imported earlier) as a sequence of bytes as an instance of <strong>ByteData</strong></li>
+<li>set this image already as a sequence of bytes as the background of our painter controller</li>
+</ul>
+<p>Copy the whole method as below:</p>
+<pre><code language="language-dart" class="language-dart">// add this method inside the _PaintingSurfaceState class
+
+void initializePainterController() async {
+  painterController = ref.read(painterControllerProvider);
+  ByteData bgImg = await rootBundle.load(&#39;assets/bgimg.png&#39;);
+  painterController.setBackgroundImage(bgImg.buffer.asUint8List());
+}
+
+</code></pre>
+<p>Let&#39;s proceed to the meat of things. Inside the <strong>build</strong> method of our <strong>_PaintingSurfaceState</strong> widget, return an instance of our <strong>Painter</strong> widget, feeding into it the <strong>painterController</strong> controller, with a background color of white, a <strong>ColoredBox</strong> child colored with white, and as its dimensions, make it 300 pixels high and matching the width of the rendering surface, as such:</p>
+<pre><code language="language-dart" class="language-dart">// inside the build method, replace the existing
+// Container placeholder with a Painter instance:
+
+return Painter(
+  controller: painterController,
+  backgroundColor: Colors.white,
+  size: Size(
+    MediaQuery.sizeOf(context).width, 300,
+  ),
+  child: const ColoredBox(color: Colors.white),
+);
+
+</code></pre>
+<p>Your app should look like this after assembling all the pieces correctly:</p>
+<p class="image-container"><img alt="App" src="img/d1c61829a2845787.gif"></p>
+<p>Ready to go to the next step? Let&#39;s proceed then!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Add the PaintingValidationControls widget" duration="0">
+        <p class="image-container"><img alt="App" src="img/e71cc7603e5ed8f.png"></p>
+<p>Let&#39;s add a widget that will allow us to trigger the validation of the image drawn as well as clearing the painting surface so we can draw another image and start all over.</p>
+<p>Back on our <strong>GeminiPictionaryHome</strong>, as another child of the main <strong>Column</strong> widget, right under the newly added <strong>PaintingSurface</strong> widget, let&#39;s add the stub widget name called <strong>PaintingValidationControls</strong>, as such:</p>
+<pre><code language="language-dart" class="language-dart">// under the existing PaintingSurfaceWidget, add this:
+
+PaintingValidationControls(),
+
+</code></pre>
+<p>This widget will encapsulate two <strong>ElevatedButton</strong> widgets inside a <strong>Row</strong> for a horizontal layout of controls. Each <strong>ElevatedButton</strong> widget will have a specific functionality:</p>
+<ul>
+<li>the button with the label <strong>Validate Picture</strong> should trigger the validation workflow. It will capture the image drawn in the painting surface and send it to Gemini.</li>
+<li>the button with the label <strong>Clear</strong> will clear the drawing canvas as well as resetting some values to allow the user to redraw something on the canvas.</li>
+</ul>
+<p>The <strong>PaintingValidationControls</strong> widget extends <strong>ConsumerWidget</strong> because later on we will use it to locate a service that encapsulates the validating and clearing functionality for us. We&#39;ll come back to fill in the blanks later. For now, add the following class to your code, as follows:</p>
+<pre><code language="language-dart" class="language-dart">class PaintingValidationControls extends ConsumerWidget {
+  const PaintingValidationControls({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton.icon(
+            onPressed: () {
+              // validate picture action
+            },
+            icon: const Icon(Icons.image),
+            label: const Text(&#39;Validate Picture&#39;)
+          ),
+          const SizedBox(width: 24),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.clear),
+            onPressed: () {
+              // clearing surface action
+            }, 
+            label: const Text(&#39;Clear&#39;)
+          )
+        ],
+      ),
+    );
+  }
+}
+
+</code></pre>
+<p>Confirm you can see the buttons (non-functional at the moment) below the painting surface area, as below. Then proceed to the next step:</p>
+<p class="image-container"><img alt="App" src="img/d39037f9f881edc9.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Quick Recap on Gemini&#39;s Multi-modality" duration="0">
+        <h2 is-upgraded>What&#39;s Multi-Modal AI?</h2>
+<p>Multimodal models can process a wide variety of inputs, including text, images, and audio, as prompts and convert those prompts into various outputs, not just the source type.</p>
+<h2 is-upgraded>What is an example of multimodal AI?</h2>
+<p>A multimodal model is a ML (machine learning) model that is capable of processing information from different modalities, including images, videos, and text. In this example, Google&#39;s multimodal model, Gemini, can receive a drawn image by the user and interpret what the drawing is, regardless of how well it is drawn, and respond accordingly.</p>
+<p class="image-container"><img alt="App" src="img/bbdf4cae2b90af62.png"></p>
+<p>For more information, visit <a href="https://cloud.google.com/use-cases/multimodal-ai" target="_blank">this link</a>.</p>
+<p>Let&#39;s continue!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Set up the payloads and services" duration="0">
+        <p>In this step, we will define the payload we should expect  to feed to our UI after Gemini identifies our image.</p>
+<p>For this, we&#39;ll create a Dart model class called <strong>ImageResultPayload</strong>. This class will encapsulate two simple properties:</p>
+<ul>
+<li>a String property called <strong>name</strong> which contains the name of the image identified</li>
+<li>a <strong>Uint8List</strong> property called <strong>imgBytes</strong>, which will hold the image represented as a sequence of bytes we used both for sending it to Gemini (as part of a multi-modal prompt), and obtained from our painting canvas surface for displaying purposes and validation to the user.</li>
+</ul>
+<p>Go ahead and add the following class:</p>
+<pre><code language="language-dart" class="language-dart">class ImageResultPayload {
+  final String name;
+  final Uint8List imgBytes;
+
+  const ImageResultPayload({
+    required this.name,
+    required this.imgBytes,
+  });
+}
+
+</code></pre>
+<p>As usual, let&#39;s add a corresponding provider type <strong>StateProvider</strong> to allow us to hold a reference of this <strong>ImageResultPayload</strong> so that listening widgets can react upon changes to this provider&#39;s state, as such:</p>
+<pre><code language="language-dart" class="language-dart">// add this along with your other providers
+
+final imageResultNotifier = StateProvider&lt;ImageResultPayload?&gt;((ref) =&gt; null);
+
+</code></pre>
+<h2 is-upgraded>Add the GeminiPaintingService</h2>
+<p>Let&#39;s create a service class that will encapsulate the functionaly of validating the picture drawn in the painting surface as well as other functionality.</p>
+<p>Start by creating a class called <strong>GeminiPaintingService</strong>; add a reference to a Riverpod <strong>Ref</strong> so we can locate other services and obtain their data to assemble a multi-modal payload to send to Gemini.</p>
+<p>Go ahead and grab the stub code below:</p>
+<pre><code language="language-dart" class="language-dart">class GeminiPaintingService {
+
+  final Ref ref;
+  const GeminiPaintingService(this.ref);
+
+  // REST OF THE CODE WILL GO HERE
+}
+
+</code></pre>
+<p>Inside our newly added class <strong>GeminiPaintingService</strong>, add a method called <strong>validatePicture()</strong>, which will encapsulate the following functionality:</p>
+<ul>
+<li>obtain the image bytes from the painting surface by calling <code>ref.read(painterControllerProvider).getImageBytes()</code></li>
+<li>call Gemini by passing both the image and an appropriate prompt providing instructions on how to proceed and what to expect from it, and providing a <strong>GenerationConfig</strong> to supply a <strong>responseMimeType</strong> and <strong>responseSchema</strong> to enforce what the expected output from Gemini should be. Notice how in the prompt and schema we are expecting back a property called <strong><em>guessedImage</em></strong> which should contain the name of the image that Gemini guessed that it was.</li>
+<li>assemble a multi-part content message, containing both the prompt as a <strong>TextPart</strong> part, and a <strong>DataPart</strong> part. The <strong>DataPart</strong> part is used to sent content other than text, and will encapsulate the image bytes to be sent to Gemini, where we specify the mimeType to be <code>image/png</code></li>
+<li>parse the response returned from Gemini by extracting the property in question (<strong><em>guessedImage</em></strong>) from Gemini&#39;s output</li>
+<li>notify the UI to show the response obtained via the <code>ref.read(imageResultNotifier.notifier).state</code> by setting it to the assembled <strong>ImageResultPayload</strong> object, which should contain both the guessed name and the image sent.</li>
+</ul>
+<p>Add the following method inside our service class, and make sure to add your own Gemini API key where it says <code>YOUR_API_KEY_HERE</code>:</p>
+<pre><code language="language-dart" class="language-dart">// inside the GeminiPaintingService class,
+// add the following method:
+
+Future&lt;void&gt; validatePicture() async {
+
+  try {
+    
+    // collect the image drawn as a sequence of bytes
+    Uint8List imgBytes = ref.read(painterControllerProvider).getImageBytes()!;
+    
+    // create a Gemini GenerativeModel instance
+    var model = GenerativeModel(
+      model: &#39;gemini-1.5-pro&#39;, 
+      apiKey: &#39;YOUR_API_KEY_HERE&#39;,
+      generationConfig: GenerationConfig(
+        responseMimeType: &#39;application/json&#39;,
+        responseSchema: Schema.object(
+          properties: {
+            &#34;guessedImage&#34;: Schema.string(),
+          }
+        )
+      )
+    );
+
+    // create a multi-part content message,
+    // containing a TextPart and a DataPart, with a mimeType of &#39;image/png&#39;
+    final content = Content.multi([
+
+      // text part (prompt)
+      TextPart(&#39;&#39;&#39;
+      You are a pictionary player. Given the provided image, identify its contents 
+      and reply in the form of a JSON payload response containing the following properties:
+      {
+        &#34;guessedImage&#34;: the name of the image drawn 
+      }
+      &#39;&#39;&#39;),
+
+      // image part
+      DataPart(&#39;image/png&#39;, imgBytes)
+    ]);
+
+    var response = await model.generateContent([content]);
+    var jsonPayload = json.decode(response.text!);
+    ref.read(imageResultNotifier.notifier).state = 
+      ImageResultPayload(
+        name: jsonPayload[&#39;guessedImage&#39;],
+        imgBytes: imgBytes
+      );
+  }
+  on Exception {
+    rethrow;
+  }
+}
+
+</code></pre>
+<p>Inside this same class, add an additional method called <strong>clear</strong> which handles the clearing of the painting surface and resets the <strong>imageResultNotifierProvider</strong> provider, as such:</p>
+<pre><code language="language-dart" class="language-dart">void clear() {
+  ref.read(painterControllerProvider).clearContent(clearColor: Colors.white);
+  ref.read(imageResultNotifier.notifier).state = null;
+}
+
+</code></pre>
+<p>With that in place, let&#39;s add the corresponding provider so we can locate this service from within our interested widgets and we can access this functionality.</p>
+<pre><code language="language-dart" class="language-dart">// add this along with our other available providers
+
+final paintingServiceProvider = Provider&lt;GeminiPaintingService&gt;((ref) {
+  return GeminiPaintingService(ref);
+});
+
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Add the PaintingValidator widget" duration="0">
+        <p class="image-container"><img alt="App" src="img/7eeb8093e4854ac4.png"></p>
+<p>Let&#39;s add the widget where the user will see Gemini&#39;s response to validating the image provided to it.</p>
+<p>Start by adding the stub widget name back inside our <strong>GeminiPictionaryHome</strong> widget, inside its child <strong>Column</strong> under the existing <strong>PaintingValidationControls</strong>, as such:</p>
+<pre><code language="language-dart" class="language-dart">// inside the Column, under the PaintingValidationControls,
+// add this piece of code:
+
+PaintingValidator(),
+
+</code></pre>
+<p>Let&#39;s flesh out this widget.</p>
+<p>Our <strong>PaintingValidator</strong> widget encapsulates the following functionality:</p>
+<ul>
+<li>This widget extends <strong>ConsumerWidget</strong> so we can listen to changes in the <strong>StateNotifier</strong> provider called <strong>imageResultNotifier</strong>.</li>
+<li>If the image result is null, show an empty widget.</li>
+<li>Otherwise, let&#39;s return a widget that contains the following: <ul>
+<li>a <strong>Row</strong> of widgets</li>
+<li>first widget should be an <strong>Image</strong> widget, using its <strong>memory</strong> method so it can ingest the <strong>imgBytes</strong> property from the image result value</li>
+<li>some spacing in between</li>
+<li>a <strong>Column</strong> widget holding a few <strong>Text</strong> widgets, one of them consuming the <strong>name</strong> property from the image result value</li>
+</ul>
+</li>
+</ul>
+<pre><code language="language-dart" class="language-dart">class PaintingValidator extends ConsumerWidget {
+  const PaintingValidator({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final imgPayload = ref.watch(imageResultNotifier);
+    
+    if (imgPayload == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          Image.memory(imgPayload.imgBytes,
+            width: 200,
+            height: 200,
+          ),
+          const SizedBox(width: 24),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(&#39;Guessed Image:&#39;, style: TextStyle(fontSize: 20, color: Colors.purpleAccent),),
+                Text(imgPayload.name, style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+</code></pre>
+<p>You won&#39;t see anything yet, since nothing is triggering the validation nor clearing the painting surface. Let&#39;s hook that functionality.</p>
+<h2 is-upgraded>Hook up the Gemini painting service functionality</h2>
+<p>Let&#39;s jump back to our previously created widget called <strong>PaintingValidationControls</strong>. Locate the first <strong>ElevatedButton.icon</strong> widget with label <strong>Validate Picture</strong>, and replace its <strong>onPressed</strong> event by the following piece of code:</p>
+<pre><code language="language-dart" class="language-dart">// replace the onPressed event by the following code
+// for the &#34;Validate Picture&#34; button:
+
+onPressed: () async {
+  await ref.read(paintingServiceProvider).validatePicture();
+},
+
+</code></pre>
+<p>The above piece of code taps into the <strong>paintingServiceProvider</strong> provider and its <strong>validatePicture</strong> functionality, and upon the user tapping on it, it goes ahead and performs the validation for us.</p>
+<p>Move right along and locate the second <strong>ElevatedButton.icon</strong> with label <strong>Clear</strong>, and replace its <strong>onPressed</strong> event by the following piece of code:</p>
+<pre><code language="language-dart" class="language-dart">// replace the onPressed event by the following code
+// for the &#34;Clear&#34; button:
+onPressed: () async {
+  ref.read(paintingServiceProvider).clear();
+}, 
+
+</code></pre>
+<p>Just as the button above, it taps into the <strong>paintingServiceProvider</strong> provider and its <strong>clear</strong> functionality, which upon the user tapping on it, it clears the painting surface and resets the image result provider - simple as that.</p>
+<p>Now, rebuild the whole application and let&#39;s take it for a spin and test your drawing skills!</p>
+<p>Try drawing something (nothing too fancy) - for example, a car. Click on the <strong>Validate Picture</strong> button. Wait a bit until Gemini replies. In the lower part of the screen you should see a container showing the same car you drew, followed by a label that says &#34;Guessed Image&#34;, and the word &#34;car&#34; under it.</p>
+<p class="image-container"><img alt="App" src="img/e91b5ea81a8c84a6.gif"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Final Touches" duration="0">
+        <p>So far we have a fully functional quick pictionary-style Flutter web app!</p>
+<p>You can continue adding other functionality such as:</p>
+<ul>
+<li>disabling the &#34;Validate Picture&#34; button if no image has been drawn</li>
+<li>preventing the flooding of calls into Gemini (yeah, that&#39;s possible) by implementing a debounce feature, among things.</li>
+</ul>
+<p>I&#39;ll add just one little thing to the <strong>PaintingValidator</strong> as I&#39;d like for it to slide up using an animated transition thanks to the <a href="https://pub.dev/packages/flutter_animate" target="_blank">flutter_animate</a> package.</p>
+<p>To the returning <strong>Container</strong> widget inside the <strong>PaitingValidator</strong>&#39;s <strong><em>build</em></strong> method, just tack on the <strong>animate()</strong> method, which gives any widget animating capabilities, followed by a call to the <strong>slideY</strong> method, since we want it to slide upwards, using a ease-in-out curve, half a second duration, and begins one unit below its original position.</p>
+<p>Add the following code at the end of the <strong>Container</strong>, as such:</p>
+<pre><code language="language-dart" class="language-dart">// at the end of the Container in the PaintingValidator widget,
+// attach this call
+
+return Container(
+  //.. rest of the code here
+).animate()
+.slideY(
+  begin: 1, end: 0,
+  curve: Curves.easeInOut,
+  duration: 0.5.seconds,
+);
+
+</code></pre>
+<p>By doing this, we&#39;re adding a bit of a style and dynamism to this widget, allowing for some sort of toast-like behavior as the result arrives from Gemini.</p>
+<p>If you added that piece of code correctly, you should get the following behavior:</p>
+<p class="image-container"><img alt="App" src="img/65027ce7dae49b78.gif"></p>
+<p>App is looking really good, and fully functional! Love how we can leverage the power of Gemini to build apps where Gemini provides us with the data we need - all we need is prompt it for it, and voilá!</p>
+<p>If you made all the way to this step, congrats on getting to this point. Hope you learned a thing or two about Flutter and how to supercharge your Flutter web apps with the power of AI!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Wrap-up" duration="0">
+        <p>In this codelab, we accomplished the following:</p>
+<ul>
+<li>Created a Flutter Web App</li>
+<li>Set up the State Management foundation for it</li>
+<li>Implemented Riverpod as our web app&#39;s default state management strategy</li>
+<li>Use the <strong>Provider</strong>, <strong>StateProvider</strong>, <strong>StateNotifierProvider</strong>, <strong>ConsumerWidget</strong> from <strong>Riverpod</strong></li>
+<li>Implemented Gemini via the Google AI Dart SDK and assemble a multi-part content prompt to sent to Gemini and tap into its multi-modal capabilities to have it guess an image drawn supplied to it.</li>
+<li>Had fun along the way building cool UIs in Flutter!!!!!</li>
+</ul>
+<h2 is-upgraded>ADDITIONAL NOTES:</h2>
+<p>Try not to keep your Gemini API key hard-coded in your project when making this project publicly available. You should follow best practices when storing your API keys. Here&#39;s a <a href="https://codewithandrea.com/articles/flutter-api-keys-dart-define-env-files/" target="_blank">great article</a> on how to do so by Andrea Bizzotto on storing API keys in Flutter.</p>
+<h2 is-upgraded>Please don&#39;t forget to follow me on social media:</h2>
+<ul>
+<li>On Twitter (<a href="https://www.twitter.com/drcoderz" target="_blank">@drcoderz</a>)</li>
+<li>On YouTube (<a href="https://www.youtube.com/channel/UCKsp3r1ERjCpKJtD2n5WtPg" target="_blank">Roman Just Codes</a>)</li>
+<li>On my <a href="https://romanjustcodes.web.app/" target="_blank">Personal Portfolio</a></li>
+<li>On <a href="https://medium.com/@romanejaquez" target="_blank">Medium</a></li>
+<li>On <a href="https://www.linkedin.com/in/roman-jaquez-8941a424/" target="_blank">LinkedIn</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Full Code" duration="0">
+        <p>Here&#39;s the full code for this lab (available as a <a href="https://gist.github.com/romanejaquez/d8dd3b36d39efce7f1c53a6db4969844" target="_blank">public Gist</a>), in case you fell behind or couldn&#39;t get yours to work for some reason. Enjoy!</p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements-tmp/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements-tmp/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements-tmp/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements-tmp/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
