@@ -566,7 +566,7 @@ PaintingValidationControls(),
                 escucha puedan reaccionar ante los cambios en el estado de este provider, como tal:</p>
             <pre><code language="language-dart" class="language-dart">// add this along with your other providers
 
-final imageResultNotifier = StateProvider&lt;ImageResultPayload&gt;((ref) => null);
+final imageResultNotifier = StateProvider&lt;ImageResultPayload?&gt;((ref) => null);
 
 </code></pre>
             <h2 is-upgraded>Añadir el GeminiPaintingService</h2>
