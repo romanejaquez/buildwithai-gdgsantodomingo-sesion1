@@ -566,7 +566,7 @@ PaintingValidationControls(),
                 escucha puedan reaccionar ante los cambios en el estado de este provider, como tal:</p>
             <pre><code language="language-dart" class="language-dart">// add this along with your other providers
 
-final imageResultNotifier = StateProvider<ImageResultPayload?>((ref) => null);
+final imageResultNotifier = StateProvider&lt;ImageResultPayload&gt;((ref) => null);
 
 </code></pre>
             <h2 is-upgraded>Añadir el GeminiPaintingService</h2>
@@ -678,7 +678,7 @@ Future<void> validatePicture() async {
                 dentro de nuestros widgets interesados y podamos acceder a esta funcionalidad.</p>
             <pre><code language="language-dart" class="language-dart">// add this along with our other available providers
 
-final paintingServiceProvider = Provider<GeminiPaintingService>((ref) {
+final paintingServiceProvider = Provider&lt;GeminiPaintingService&gt;((ref) {
   return GeminiPaintingService(ref);
 });
 
